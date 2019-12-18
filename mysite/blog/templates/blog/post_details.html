@@ -1,0 +1,50 @@
+{% extends "blog/base.html" %}
+{% block content %}
+
+
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ post.author}}</a>
+      {% if post.published_date %}
+        <small class="text-muted">{{ post.published_date }}</small>
+      {% else %}
+        <a class="btn btn-primary" href="{% url 'blog:post_publish' pk=post.pk %}">
+        <span class="iconify" data-icon="simple-icons:faceit" data-inline="false"></span> Publish</a>
+      {% endif %}
+    </div>
+    <h2><a class="article-title" href="#">{{ post.title }}</a></h2>
+    <p class="article-content">{{ post.text }}</p>
+    {% if user.is_authenticated %}
+      <a class="btn btn-primary btn-info" href="{% url 'blog:post_edit' pk=post.pk %}">
+      <span class="iconify" data-icon="simple-icons:apache" data-inline="false"></span> Edit</a>
+      <a class="btn btn-danger" href="{% url 'blog:post_remove' pk=post.pk %}">
+      <span class="iconify" data-icon="simple-icons:ifixit" data-inline="false"></span> Remove</a>
+    {% endif %}
+    <a class="btn btn-primary btn-comment" href="{% url 'blog:add_comment_to_post' pk=post.pk %}">
+    <span class="iconify" data-icon="simple-icons:addthis" data-inline="false"></span> Add comment</a>
+    <hr>
+    <h6>Comments:</h6>
+    <hr>
+    {% for comment in post.comments.all %}
+      <small class="mr-2 text-muted">{{comment.create_date}}</small>
+      {% if comment.approved_comment or user.is_authenticated %}
+        {% if not comment.approved_comment %}
+          <a class="btn btn-primary btn-warning" href="{% url 'blog:comment_remove' pk=comment.pk %}">
+          <span class="iconify" data-icon="simple-icons:ifixit" data-inline="false"></span></a>
+          <a class="btn btn-primary" href="{% url 'blog:comment_approve' pk=comment.pk %}">
+          <span class="iconify" data-icon="el:ok" data-inline="false"></span></a>
+        {% endif %}
+        <br>
+        <small>{{comment.text}}</small>
+        <br>
+        <small class="text-muted">Posted by: {{comment.author}} </small>
+        <br> <br>
+      {% endif %}
+      {% empty %}
+    {% endfor %}
+  </div>
+
+</article>
+
+{% endblock %}
